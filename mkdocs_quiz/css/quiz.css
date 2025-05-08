@@ -1,5 +1,4 @@
 .quiz {
-  border: 1px solid black;
   padding: 1rem;
   margin: 1rem 0;
 }
@@ -55,4 +54,9 @@ input[type='radio'].wrong {
 }
 .content {
   margin: 10px;
+}
+
+.quiz h3 {
+    font-size: inherit;
+    margin-bottom: 0.8em;
 }
