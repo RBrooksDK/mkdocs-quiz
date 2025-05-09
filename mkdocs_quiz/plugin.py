@@ -137,6 +137,7 @@ class MkDocsQuizPlugin(BasePlugin):
             # --- Also changed name="answer" to be unique per quiz using quiz_id_counter ---
             quiz_html = (
                 '<div class="quiz" data-quiz-id="{}">'
+                '<h4>Question {}</h4>'
                 '<h3>{}</h3>'
                 '<form>'
                 '<fieldset>{}</fieldset>'
@@ -147,7 +148,7 @@ class MkDocsQuizPlugin(BasePlugin):
                 '</form>'
                 '<section class="content hidden">{}</section>'
                 '</div>'
-            ).format(quiz_id_counter, question, "".join(full_answers_html_parts), explanation_content)
+            ).format(quiz_id_counter, quiz_id_counter + 1, question, "".join(full_answers_html_parts), explanation_content)
             
             # Replace the original block in the markdown
             # This simple replace might be problematic if the match_content is not unique
