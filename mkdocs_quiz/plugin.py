@@ -49,11 +49,13 @@ class MkDocsQuizPlugin(BasePlugin):
         self.lang = "eng"  # Default language
 
     def on_config(self, config):
+        print(f"[mkdocs-quiz] self.config: {self.config}")  # DEBUG
         self.lang = self.config.get("lang", "eng")
         print(f"[mkdocs-quiz] Language set to: {self.lang}")  # DEBUG
         return config
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
+        print(f"[mkdocs-quiz] on_page_markdown: self.lang = {self.lang}")  # DEBUG
         if "quiz" in page.meta and page.meta["quiz"] == "disable":
             return markdown
         self.page_has_quizzes = False # Reset for the current page
