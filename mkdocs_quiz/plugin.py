@@ -50,6 +50,7 @@ class MkDocsQuizPlugin(BasePlugin):
 
     def on_config(self, config):
         self.lang = self.config.get("lang", "eng")
+        print(f"[mkdocs-quiz] Language set to: {self.lang}")  # DEBUG
         return config
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
