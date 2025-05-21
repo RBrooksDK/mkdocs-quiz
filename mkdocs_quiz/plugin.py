@@ -1,3 +1,4 @@
+from mkdocs.config import config_options
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
 from mkdocs.structure.files import Files
@@ -38,6 +39,9 @@ LANG_STRINGS = {
 }
 
 class MkDocsQuizPlugin(BasePlugin):
+    config_scheme = (
+        ('lang', config_options.Type(str, default='eng')),
+    )
     def __init__(self):
         self.enabled = True
         self.dirty = False # Not typically used by plugins this way
@@ -45,13 +49,7 @@ class MkDocsQuizPlugin(BasePlugin):
         self.lang = "eng"  # Default language
 
     def on_config(self, config):
-        # Try to get language from plugin config in mkdocs.yml
-        plugin_conf = config.plugins.get("mkdocs_quiz", {})
-        # plugin_conf may be a dict or a plugin instance
-        if isinstance(plugin_conf, dict):
-            self.lang = plugin_conf.get("lang", "eng")
-        elif hasattr(plugin_conf, "lang"):
-            self.lang = getattr(plugin_conf, "lang", "eng")
+        self.lang = self.config.get("lang", "eng")
         return config
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
