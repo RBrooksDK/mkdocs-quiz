@@ -19,15 +19,40 @@ with inp_file_js.open("rt") as f_js:
     js_content = f_js.read()
 js_tag = '<script type="text/javascript" defer>{}</script>'.format(js_content)
 
+# Language strings for i18n
+LANG_STRINGS = {
+    "eng": {
+        "question": "Question",
+        "check_answer": "Check Answer",
+        "score": "Score",
+        "total_score_summary": "Total Score Summary",
+        "your_total_score": "Your total score for all quizzes on this page is:"
+    },
+    "da": {
+        "question": "Spørgsmål",
+        "check_answer": "Tjek svar",
+        "score": "Point",
+        "total_score_summary": "Samlet pointoversigt",
+        "your_total_score": "Dit samlede pointtal for alle quizzer på denne side er:"
+    }
+}
 
 class MkDocsQuizPlugin(BasePlugin):
     def __init__(self):
         self.enabled = True
         self.dirty = False # Not typically used by plugins this way
         self.page_has_quizzes = False # Add this line
+        self.lang = "eng"  # Default language
 
-    # on_startup is not a standard MkDocs plugin event, removing it.
-    # If you need config, use on_config.
+    def on_config(self, config):
+        # Try to get language from plugin config in mkdocs.yml
+        plugin_conf = config.plugins.get("mkdocs_quiz", {})
+        # plugin_conf may be a dict or a plugin instance
+        if isinstance(plugin_conf, dict):
+            self.lang = plugin_conf.get("lang", "eng")
+        elif hasattr(plugin_conf, "lang"):
+            self.lang = getattr(plugin_conf, "lang", "eng")
+        return config
 
     def on_page_markdown(self, markdown, page, config, **kwargs):
         if "quiz" in page.meta and page.meta["quiz"] == "disable":
@@ -133,17 +158,18 @@ class MkDocsQuizPlugin(BasePlugin):
                     explanation_content_lines = quiz_lines[content_line_index + 1:]
                 explanation_content = "\n".join(explanation_content_lines).strip()
 
+            strings = LANG_STRINGS.get(self.lang, LANG_STRINGS["eng"])
             # --- MODIFIED: Added quiz-score-display div ---
             # --- Also changed name="answer" to be unique per quiz using quiz_id_counter ---
             quiz_html = (
                 '<div class="quiz" data-quiz-id="{}">'
-                '<h4>Question {}</h4>'
+                f'<h4>{strings["question"]} {{}}</h4>'
                 '<h3>{}</h3>'
                 '<form>'
                 '<fieldset>{}</fieldset>'
-                '<button type="submit" class="quiz-button">Check Answer</button>' # Changed from Submit to Check Answer
-                '<div class="quiz-score-display" style="margin-top: 10px; font-weight: bold;">' # Style is optional here
-                'Score: <span class="quiz-current-score">0</span> / <span class="quiz-total-possible">1</span>' # Default to 1 point
+                f'<button type="submit" class="quiz-button">{strings["check_answer"]}</button>'
+                '<div class="quiz-score-display" style="margin-top: 10px; font-weight: bold;">'
+                f'{strings["score"]}: <span class="quiz-current-score">0</span> / <span class="quiz-total-possible">1</span>'
                 '</div>'
                 '</form>'
                 '<section class="content hidden">{}</section>'
@@ -165,12 +191,13 @@ class MkDocsQuizPlugin(BasePlugin):
 
     def on_page_content(self, html: str, *, page: Page, config: MkDocsConfig, files: Files) -> str | None:
         if self.page_has_quizzes: # Check our flag
-            total_score_html = """
+            strings = LANG_STRINGS.get(self.lang, LANG_STRINGS["eng"])
+            total_score_html = f"""
             <div id="quiz-total-score-summary" style="margin-top: 20px; padding: 10px; border-top: 1px solid #ccc;">
-                <h3>Total Score Summary</h3>
-                <p>Your total score for all quizzes on this page is: 
-                    <span id="total-quiz-score-achieved">0</span> / 
-                    <span id="total-quiz-score-possible">0</span>
+                <h3>{strings['total_score_summary']}</h3>
+                <p>{strings['your_total_score']}
+                    <span id=\"total-quiz-score-achieved\">0</span> /
+                    <span id=\"total-quiz-score-possible\">0</span>
                 </p>
             </div>
             """
