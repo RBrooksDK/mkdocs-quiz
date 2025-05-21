@@ -33,7 +33,7 @@ LANG_STRINGS = {
         "check_answer": "Tjek svar",
         "score": "Point",
         "total_score_summary": "Samlet pointoversigt",
-        "your_total_score": "Dit samlede pointtal for alle quizzer på denne side er:"
+        "your_total_score": "Dit samlede pointtal for alle quizzer på denne side:"
     }
 }
 
